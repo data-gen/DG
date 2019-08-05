@@ -1,0 +1,69 @@
+
+-- ---------------------------------------------------------------------------------------------------
+--  우편번호(ZIPCODE) 정보 
+------------------------------------------------------------------------------------------------------
+
+create table zipcode(
+	zipcode	varchar2(7),		/* 우편번호  */
+	sido		varchar2(12),		/* 특별시,광역시,도 */
+	gugun		varchar2(60),	/* 시,군,구  */
+	dong		varchar2(90),		/* 읍,면,동  */
+	ri		varchar2(90),		/* 리,건물명 */
+ 	bunji		varchar2(90),		/* 번지,아파트동,호수 */
+	seq		number(5)			/* 데이터 순서 */
+) TABLESPACE users;	
+
+
+--------------------------------------------------------------------------------
+--  고객(CUSTOMER) 정보 관리  
+--------------------------------------------------------------------------------
+
+CREATE TABLE CUSTOMER(
+	ID 		VARCHAR2(20) NOT NULL , 		-- 고객 ID
+    	PWD 		VARCHAR2(20) NOT NULL , 		-- 비밀번호
+     	NAME 		VARCHAR2(20) CONSTRAINT CUSTOMER_NAME_NN NOT NULL, -- 고객명
+	ZIPCODE 	VARCHAR2(7), 				-- 우편번호
+	ADDRESS1 	VARCHAR2(100), 			-- (시/군/구)주소 
+	ADDRESS2 	VARCHAR2(100),   			-- (동/명) 주소
+	MOBILE_NO 	VARCHAR2(14),  			-- 헨드폰 번호
+	PHONE_NO 	VARCHAR2(14), 			        -- 유선 전화 번호 
+	CREDIT_LIMIT 	NUMBER(9,2), 				-- 신용등급
+	EMAIL 		VARCHAR2(20), 			       -- 이메일
+	ACCOUNT_MGR NUMBER(4,0),   	     	       -- 담당 사원 , emp.empno 
+	BIRTH_DT 	DATE, 					-- 고객 생일
+	ENROLL_DT 	DATE DEFAULT sysdate, 		-- 고객 등록일
+	GENDER 	VARCHAR2(1), 				-- 성별
+   CONSTRAINT CUSTOMER_CREDIT_LIMIT_CHK CHECK ( credit_limit between 0 and 5000 ) , 
+  CONSTRAINT CUSTOMER_ID_PK PRIMARY KEY (ID)
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS NOLOGGING 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE USERS  , 
+	 CONSTRAINT CUSTOMER_MOBILE_NO_UK UNIQUE (MOBILE_NO)
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE USERS  , 
+	 CONSTRAINT CUSTOMER_ACCOUNT_MGR_FK FOREIGN KEY (ACCOUNT_MGR)
+	  REFERENCES  EMP(EMPNO) ON DELETE SET NULL 
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE USERS ;
+
+CREATE INDEX CUSTOMER_ACCOUNT_MGR_EMAIL_IDX  ON CUSTOMER(ACCOUNT_MGR,EMAIL)
+UNRECOVERABLE
+TABLESPACE USERS;
+
+
+ANALYZE INDEX CUSTOMER_ACCOUNT_MGR_IDX  ESTIMATE STATISTICS SAMPLE 20 PERCENT;
+
+
+
+
+
